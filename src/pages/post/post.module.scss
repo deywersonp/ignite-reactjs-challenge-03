@@ -68,5 +68,9 @@
     display: flex;
     align-items: center;
     gap: .5rem;
+
+    address {
+      font-style: normal;
+    }
   }
 }

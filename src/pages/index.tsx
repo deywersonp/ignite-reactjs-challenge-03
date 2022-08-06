@@ -39,7 +39,7 @@ export default function Home(): JSX.Element {
 
       <main className={commonStyles.container}>
         <div className={styles.post}>
-          <Link href="/">
+          <Link href="/post/123">
             <a>
               <h1>Como utilizar Hooks</h1>
               <p>Pensando em sincronização em vez de ciclos de vida.</p>

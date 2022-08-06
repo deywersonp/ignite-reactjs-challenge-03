@@ -49,7 +49,7 @@ export default function Post(): JSX.Element {
             </div>
             <div>
               <FiUser />
-              <span>Joseph Oliveira</span>
+              <address className="author">Joseph Oliveira</address>
             </div>
             <div>
               <FiClock />
