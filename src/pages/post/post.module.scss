@@ -1,1 +1,72 @@
-// TODO
+.container {
+  max-width: 1440px;
+  margin: 0 auto;
+
+  img {
+    width: 100vw;
+    max-width: 1440px;
+  }
+}
+
+.post {
+  max-width: 700px;
+  margin: 5rem auto 0;
+  padding-bottom: 2rem;
+
+  @media (max-width: 700px) {
+    padding: 0 2rem 2rem;
+  }
+
+  h1 {
+    font-size: 3rem;
+    color: var(--heading);
+    line-height: 3.62rem;
+    letter-spacing: -0.5px;
+  }
+
+  h2 {
+    font-size: 2rem;
+    color: var(--heading);
+    margin-bottom: 2rem;
+  }
+
+  a {
+    cursor: pointer;
+    color: var(--highlight);
+    transition: .2s;
+
+    &:hover {
+      text-decoration: underline;
+      text-underline-position: under;
+    }
+  }
+
+  p,
+  ul {
+    margin: 1.5rem 0;
+  }
+
+  ul {
+    padding-left: 1.5rem;
+
+    li {
+      margin: 0.5rem 0;
+    }
+  }
+}
+
+.infoContainer {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin: 1.5rem 0 4rem;
+
+  div {
+    color: var(--info);
+    line-height: 1.21rem;
+
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+  }
+}

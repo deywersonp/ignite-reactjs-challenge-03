@@ -35,7 +35,7 @@ export default function Home(): JSX.Element {
         <title>spacetraveling.</title>
       </Head>
 
-      <Header />
+      <Header isHomePage />
 
       <main className={commonStyles.container}>
         <div className={styles.post}>
