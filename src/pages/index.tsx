@@ -1,5 +1,6 @@
 import { GetStaticProps } from 'next';
 import Head from 'next/head';
+import Link from 'next/link';
 
 import { FiCalendar, FiUser } from 'react-icons/fi';
 import { getPrismicClient } from '../services/prismic';
@@ -35,48 +36,26 @@ export default function Home(): JSX.Element {
 
       <main className={commonStyles.container}>
         <div className={styles.post}>
-          <h1>Como utilizar Hooks</h1>
-          <p>Pensando em sincronização em vez de ciclos de vida.</p>
-          <div className={styles.infoContainer}>
-            <div>
-              <FiCalendar />
-              <time>15 Mar 2021</time>
-            </div>
-            <div>
-              <FiUser />
-              <span>Joseph Oliveira</span>
-            </div>
-          </div>
-        </div>
+          <Link href="/">
+            <a>
+              <h1>Como utilizar Hooks</h1>
+              <p>Pensando em sincronização em vez de ciclos de vida.</p>
+              <div className={styles.infoContainer}>
+                <div>
+                  <FiCalendar />
+                  <time>15 Mar 2021</time>
+                </div>
+                <div>
+                  <FiUser />
+                  <span>Joseph Oliveira</span>
+                </div>
+              </div>
+            </a>
+          </Link>
 
-        <div className={styles.post}>
-          <h1>Como utilizar Hooks</h1>
-          <p>Pensando em sincronização em vez de ciclos de vida.</p>
-          <div className={styles.infoContainer}>
-            <div>
-              <FiCalendar />
-              <time>15 Mar 2021</time>
-            </div>
-            <div>
-              <FiUser />
-              <span>Joseph Oliveira</span>
-            </div>
-          </div>
-        </div>
-
-        <div className={styles.post}>
-          <h1>Como utilizar Hooks</h1>
-          <p>Pensando em sincronização em vez de ciclos de vida.</p>
-          <div className={styles.infoContainer}>
-            <div>
-              <FiCalendar />
-              <time>15 Mar 2021</time>
-            </div>
-            <div>
-              <FiUser />
-              <span>Joseph Oliveira</span>
-            </div>
-          </div>
+          <button type="button" title="Carregar mais posts">
+            Carregar mais posts
+          </button>
         </div>
       </main>
     </>

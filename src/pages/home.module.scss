@@ -2,17 +2,43 @@
   max-width: 700px;
   margin: 3rem auto 0;
 
-  h1 {
-    font-size: 1.75rem;
-    line-height: 2.125rem;
-    margin-bottom: .5rem;
-    color: var(--heading);
+  a {
+    &:hover {
+      opacity: .8;
+    }
+
+    h1 {
+      font-size: 1.75rem;
+      line-height: 2.125rem;
+      color: var(--heading);
+
+      margin-bottom: .5rem;
+    }
+
+    p {
+      font-size: 1.25rem;
+      line-height: 1.375rem;
+
+      margin-bottom: 1.5rem;
+    }
   }
 
-  p {
-    font-size: 1.25rem;
-    line-height: 1.375rem;
-    margin-bottom: 1.5rem;
+  button {
+    background-color: transparent;
+    border: none;
+
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--highlight);
+    line-height: 1.361rem;
+
+    margin: 4rem auto 0;
+
+    transition: opacity 0.2s;
+
+    &:hover {
+      opacity: .8;
+    }
   }
 }
 
@@ -22,9 +48,12 @@
   gap: 1.5rem;
 
   div {
+    font-size: 0.875rem;
+    color: var(--info);
+    line-height: 1.06rem;
+
     display: flex;
     align-items: center;
     gap: .5rem;
-    color: var(--info);
   }
 }
