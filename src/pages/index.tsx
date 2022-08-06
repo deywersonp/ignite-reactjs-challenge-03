@@ -3,6 +3,7 @@ import Head from 'next/head';
 import Link from 'next/link';
 
 import { FiCalendar, FiUser } from 'react-icons/fi';
+import Header from '../components/Header';
 import { getPrismicClient } from '../services/prismic';
 
 import commonStyles from '../styles/common.module.scss';
@@ -33,6 +34,8 @@ export default function Home(): JSX.Element {
       <Head>
         <title>spacetraveling.</title>
       </Head>
+
+      <Header />
 
       <main className={commonStyles.container}>
         <div className={styles.post}>
