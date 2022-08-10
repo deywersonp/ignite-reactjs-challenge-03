@@ -3,6 +3,9 @@ import Head from 'next/head';
 import Link from 'next/link';
 
 import { FiCalendar, FiUser } from 'react-icons/fi';
+import { format } from 'date-fns';
+import ptBR from 'date-fns/locale/pt-BR';
+import { useState } from 'react';
 import Header from '../components/Header';
 import { getPrismicClient } from '../services/prismic';
 
@@ -28,7 +31,40 @@ interface HomeProps {
   postsPagination: PostPagination;
 }
 
-export default function Home(): JSX.Element {
+export default function Home(props: HomeProps): JSX.Element {
+  const { postsPagination } = props;
+  const { results, next_page } = postsPagination;
+
+  const [posts, setPosts] = useState(results);
+  const [nextPage, setNextPage] = useState<string | null>(next_page);
+
+  function fetchContent(): void {
+    fetch(nextPage)
+      .then(response => response.json())
+      .then(response => {
+        const newPosts = response?.results?.map(post => {
+          return {
+            uid: post.uid,
+            first_publication_date: format(
+              new Date(post.first_publication_date),
+              'dd MMM y',
+              {
+                locale: ptBR,
+              }
+            ),
+            data: {
+              title: post.data.title ?? '',
+              subtitle: post.data.subtitle ?? '',
+              author: post.data.author ?? '',
+            },
+          };
+        });
+
+        setPosts([...posts, ...newPosts]);
+        setNextPage(response.next_page);
+      });
+  }
+
   return (
     <>
       <Head>
@@ -39,35 +75,67 @@ export default function Home(): JSX.Element {
 
       <main className={commonStyles.container}>
         <div className={styles.post}>
-          <Link href="/post/123">
-            <a>
-              <h1>Como utilizar Hooks</h1>
-              <p>Pensando em sincronização em vez de ciclos de vida.</p>
-              <div className={styles.infoContainer}>
-                <div>
-                  <FiCalendar />
-                  <time>15 Mar 2021</time>
+          {posts.map(post => (
+            <Link key={post.uid} href={`/post/${post.uid}`}>
+              <a>
+                <h1>{post.data?.title}</h1>
+                <p>{post.data?.subtitle}</p>
+                <div className={styles.infoContainer}>
+                  <div>
+                    <FiCalendar />
+                    <time>{post.first_publication_date}</time>
+                  </div>
+                  <div>
+                    <FiUser />
+                    <span>{post.data?.author}</span>
+                  </div>
                 </div>
-                <div>
-                  <FiUser />
-                  <span>Joseph Oliveira</span>
-                </div>
-              </div>
-            </a>
-          </Link>
-
-          <button type="button" title="Carregar mais posts">
-            Carregar mais posts
-          </button>
+              </a>
+            </Link>
+          ))}
+          {nextPage && (
+            <button
+              onClick={fetchContent}
+              type="button"
+              title="Carregar mais posts"
+            >
+              Carregar mais posts
+            </button>
+          )}
         </div>
       </main>
     </>
   );
 }
 
-// export const getStaticProps = async () => {
-//   // const prismic = getPrismicClient({});
-//   // const postsResponse = await prismic.getByType(TODO);
+export const getStaticProps: GetStaticProps = async () => {
+  const prismic = getPrismicClient({});
+  const postsResponse = await prismic.getByType('post', { pageSize: 2 });
 
-//   // TODO
-// };
+  const posts = postsResponse?.results?.map(post => {
+    return {
+      uid: post.uid,
+      first_publication_date: format(
+        new Date(post.first_publication_date),
+        'dd MMM y',
+        {
+          locale: ptBR,
+        }
+      ),
+      data: {
+        title: post.data.title ?? '',
+        subtitle: post.data.subtitle ?? '',
+        author: post.data.author ?? '',
+      },
+    };
+  });
+
+  return {
+    props: {
+      postsPagination: {
+        results: posts,
+        next_page: postsResponse.next_page,
+      },
+    },
+  };
+};

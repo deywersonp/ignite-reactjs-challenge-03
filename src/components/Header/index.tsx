@@ -17,7 +17,7 @@ export default function Header({ isHomePage }: Props): JSX.Element {
       >
         <Link href="/">
           <a>
-            <img src="/images/Logo.png" alt="Logo" />
+            <img src="/images/Logo.png" alt="logo" />
           </a>
         </Link>
       </div>
