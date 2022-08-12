@@ -45,13 +45,7 @@ export default function Home(props: HomeProps): JSX.Element {
         const newPosts = response?.results?.map(post => {
           return {
             uid: post.uid,
-            first_publication_date: format(
-              new Date(post.first_publication_date),
-              'dd MMM y',
-              {
-                locale: ptBR,
-              }
-            ),
+            first_publication_date: post.first_publication_date,
             data: {
               title: post.data.title ?? '',
               subtitle: post.data.subtitle ?? '',
@@ -75,7 +69,7 @@ export default function Home(props: HomeProps): JSX.Element {
 
       <main className={commonStyles.container}>
         <div className={styles.post}>
-          {posts.map(post => (
+          {posts?.map(post => (
             <Link key={post.uid} href={`/post/${post.uid}`}>
               <a>
                 <h1>{post.data?.title}</h1>
@@ -83,7 +77,15 @@ export default function Home(props: HomeProps): JSX.Element {
                 <div className={styles.infoContainer}>
                   <div>
                     <FiCalendar />
-                    <time>{post.first_publication_date}</time>
+                    <time>
+                      {format(
+                        new Date(post.first_publication_date),
+                        'dd MMM y',
+                        {
+                          locale: ptBR,
+                        }
+                      )}
+                    </time>
                   </div>
                   <div>
                     <FiUser />
@@ -110,18 +112,12 @@ export default function Home(props: HomeProps): JSX.Element {
 
 export const getStaticProps: GetStaticProps = async () => {
   const prismic = getPrismicClient({});
-  const postsResponse = await prismic.getByType('post', { pageSize: 2 });
+  const postsResponse = await prismic.getByType('post', { pageSize: 1 });
 
   const posts = postsResponse?.results?.map(post => {
     return {
       uid: post.uid,
-      first_publication_date: format(
-        new Date(post.first_publication_date),
-        'dd MMM y',
-        {
-          locale: ptBR,
-        }
-      ),
+      first_publication_date: post.first_publication_date,
       data: {
         title: post.data.title ?? '',
         subtitle: post.data.subtitle ?? '',

@@ -1,8 +1,12 @@
+import { format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 import { GetStaticPaths, GetStaticProps } from 'next';
 import Head from 'next/head';
 import { FiCalendar, FiUser, FiClock } from 'react-icons/fi';
+import { useRouter } from 'next/router';
+import { RichText } from 'prismic-dom';
+import hash from 'object-hash';
 import Header from '../../components/Header';
-
 import { getPrismicClient } from '../../services/prismic';
 
 import styles from './post.module.scss';
@@ -28,7 +32,28 @@ interface PostProps {
   post: Post;
 }
 
-export default function Post(): JSX.Element {
+export default function Post({ post }: PostProps): JSX.Element {
+  const router = useRouter();
+
+  const wordsPerMinute = 200;
+  const totalWords = Math.round(
+    post.data.content.reduce(
+      (acc, contentItem) =>
+        acc +
+        contentItem.heading.toString().split(' ').length +
+        contentItem.body.reduce(
+          (acc2, bodyItem) => acc2 + bodyItem.text.toString().split(' ').length,
+          0
+        ),
+      0
+    )
+  );
+  const totalMinutes = Math.ceil(totalWords / wordsPerMinute);
+
+  if (router.isFallback) {
+    return <div>Carregando...</div>;
+  }
+
   return (
     <>
       <Head>
@@ -38,14 +63,18 @@ export default function Post(): JSX.Element {
       <Header />
 
       <main className={styles.container}>
-        <img src="/images/Banner.png" alt="Banner" />
+        <img src={post?.data?.banner?.url} alt="Banner" />
 
         <article className={styles.post}>
-          <h1>Criando um app CRA do zero</h1>
+          <h1>{post.data.title}</h1>
           <div className={styles.infoContainer}>
             <div>
               <FiCalendar />
-              <time>15 Mar 2021</time>
+              <time>
+                {format(new Date(post.first_publication_date), 'dd MMM y', {
+                  locale: ptBR,
+                })}
+              </time>
             </div>
             <div>
               <FiUser />
@@ -53,42 +82,61 @@ export default function Post(): JSX.Element {
             </div>
             <div>
               <FiClock />
-              <span>4 min</span>
+              <span>{`${totalMinutes} min`}</span>
             </div>
           </div>
-          <h2>Proin et varius</h2>
-          <p>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam
-            dolor sapien, vulputate eu diam at, condimentum hendrerit tellus.
-            Nam facilisis sodales felis, pharetra pharetra lectus auctor sed. Ut
-            venenatis mauris vel libero pretium, et pretium ligula faucibus.
-            Morbi nibh felis, elementum a posuere et, vulputate et erat. Nam
-            venenatis.
-          </p>
-          <p>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam
-            dolor sapien, vulputate eu diam at, condimentum hendrerit tellus.
-            Nam facilisis sodales felis, pharetra pharetra lectus auctor sed. Ut
-            venenatis <a>mauris vel libero pretium</a>, et pretium ligula
-            faucibus. Morbi nibh felis, elementum a posuere et, vulputate et
-            erat. Nam venenatis.
-          </p>
+          {post.data.content.map(content => (
+            <div key={hash({ ...content, ts: new Date().getTime() })}>
+              <h2>{content.heading}</h2>
+              <div
+                className={styles.body}
+                // eslint-disable-next-line
+                dangerouslySetInnerHTML={{
+                  __html: RichText.asHtml(content.body),
+                }}
+              />
+            </div>
+          ))}
         </article>
       </main>
     </>
   );
 }
 
-// export const getStaticPaths = async () => {
-//   const prismic = getPrismicClient({});
-//   const posts = await prismic.getByType(TODO);
+export const getStaticPaths: GetStaticPaths = async () => {
+  const prismic = getPrismicClient({});
+  const posts = await prismic.getByType('post');
 
-//   // TODO
-// };
+  const paths = posts.results.map(post => ({ params: { slug: post.uid } }));
 
-// export const getStaticProps = async ({params }) => {
-//   const prismic = getPrismicClient({});
-//   const response = await prismic.getByUID(TODO);
+  return {
+    paths,
+    fallback: true,
+  };
+};
 
-//   // TODO
-// };
+export const getStaticProps: GetStaticProps = async ({ params }) => {
+  const { slug } = params;
+
+  const prismic = getPrismicClient({});
+
+  const response = await prismic.getByUID('post', String(slug));
+
+  const post = {
+    first_publication_date: response.first_publication_date,
+    data: {
+      title: response.data.title,
+      banner: {
+        url: response.data.banner.url,
+      },
+      author: response.data.author,
+      content: response.data.content,
+    },
+  };
+
+  return {
+    props: {
+      post,
+    },
+  };
+};
